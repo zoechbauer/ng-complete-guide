@@ -70,4 +70,13 @@ export class RecipeEditComponent implements OnInit {
     // console.log(this.controls);
     // console.log(this.recipeForm.get('ingredients') as FormArray);
   }
+
+  onAddIngredient() {
+    (this.recipeForm.get('ingredients') as FormArray).push(
+      new FormGroup({
+        name: new FormControl(),
+        amount: new FormControl()
+      })
+    );
+  }
 }
