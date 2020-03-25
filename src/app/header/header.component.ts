@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { DataStorageService } from '../shared/data-storage.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -16,6 +15,6 @@ export class HeaderComponent {
   }
 
   onFetchData() {
-    this.dataStorageService.fetchRecipes();
+    this.dataStorageService.fetchRecipes().subscribe();
   }
 }
