@@ -1,6 +1,8 @@
-#IMPORTANT NOTE TO MISSING ENVIRONMENTS FOLDER
+# IMPORTANT NOTE TO MISSING ENVIRONMENTS FOLDER
 The environment.ts contains secret access data to my firebase account and therefore I stopped tracing this folder.
+
 Please install this folder from another Angular project and change the values:
+
 export const environment = {
   production: false,
   firebaseUrl: 'https://your url to your firebase account database/'
