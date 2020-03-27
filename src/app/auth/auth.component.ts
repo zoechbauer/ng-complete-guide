@@ -23,7 +23,7 @@ export class AuthComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    console.log(form.value);
+    // console.log(form.value);
     if (!form.value) {
       return;
     }
@@ -42,7 +42,6 @@ export class AuthComponent implements OnInit {
 
     authObs.subscribe(
       resp => {
-        console.log(resp);
         this.isLoading = false;
         this.router.navigate(['/recipes']);
       },

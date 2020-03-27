@@ -24,8 +24,6 @@ export class AuthService {
   signup(email: string, password: string) {
     const firebaseApiKey = environment.firebaseApiKey;
     const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseApiKey}`;
-    console.log('url', url);
-    console.log(email, password);
     return this.http
       .post<AuthResponseData>(url, {
         email: email,
@@ -53,7 +51,6 @@ export class AuthService {
   ) {
     const expirationDate = new Date(new Date().getTime() + +expiresIn * 1000);
     const user = new User(email, userId, token, expirationDate);
-    console.log('user', user);
     this.user.next(user);
   }
 
