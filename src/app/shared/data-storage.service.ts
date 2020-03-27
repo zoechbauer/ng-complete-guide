@@ -27,13 +27,7 @@ export class DataStorageService {
 
   fetchRecipes() {
     const url = environment.firebaseUrl + 'recipes.json';
-    return this.authService.user.pipe(
-      take(1),
-      exhaustMap(user => {
-        return this.http.get<Recipe[]>(url, {
-          params: new HttpParams().set('auth', user.token)
-        });
-      }),
+    return this.http.get<Recipe[]>(url).pipe(
       map(recipes => {
         return recipes.map(recipe => {
           return {
@@ -44,7 +38,6 @@ export class DataStorageService {
       }),
       tap(recipes => {
         this.recipeService.setRecipes(recipes);
-        console.log(recipes);
       })
     );
   }
