@@ -7,7 +7,6 @@ import { HeaderComponent } from './header/header.component';
 import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared-module.module';
 import { CoreModule } from './core.module';
-import { AuthModule } from './auth/auth.module';
 
 @NgModule({
   declarations: [AppComponent, HeaderComponent],
@@ -17,7 +16,6 @@ import { AuthModule } from './auth/auth.module';
     AppRoutingModule,
     SharedModule,
     CoreModule,
-    AuthModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
