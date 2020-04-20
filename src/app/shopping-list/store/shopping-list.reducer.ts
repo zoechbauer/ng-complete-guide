@@ -3,7 +3,7 @@ import * as ShoppingListActions from './shopping-list.actions';
 import { Ingredient } from 'src/app/shared/ingredient.model';
 
 const initialState = {
-  ingredients: [new Ingredient('Apples', 5), new Ingredient('Tomatoes', 5)],
+  ingredients: [new Ingredient('Apples', 4), new Ingredient('Tomatoes', 5)],
 };
 
 export function ShoppingListReducer(
@@ -16,5 +16,7 @@ export function ShoppingListReducer(
         ...state,
         ingredients: [...state.ingredients, action.payload],
       };
+    default:
+      return state;
   }
 }
