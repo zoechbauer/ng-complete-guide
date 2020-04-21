@@ -4,6 +4,7 @@ import { Ingredient } from 'src/app/shared/ingredient.model';
 // identifiers = action type
 export const ADD_INGREDIENT = 'ADD_INGREDIANT';
 export const ADD_INGREDIENTS = 'ADD_INGREDIANTS';
+export const DELETE_INGREDIENT = 'DELETE_INGREDIENT';
 
 // actions
 export class AddIngredient implements Action {
@@ -16,4 +17,12 @@ export class AddIngredients implements Action {
   constructor(public payload: Ingredient[]) {}
 }
 
-export type ShoppingListActions = AddIngredient | AddIngredients;
+export class DeleteIngredient implements Action {
+  readonly type = DELETE_INGREDIENT;
+  constructor(public payload: number) {}
+}
+
+export type ShoppingListActions =
+  | AddIngredient
+  | AddIngredients
+  | DeleteIngredient;

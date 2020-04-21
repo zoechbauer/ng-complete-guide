@@ -1,4 +1,3 @@
-import { Action } from '@ngrx/store';
 import * as ShoppingListActions from './shopping-list.actions';
 import { Ingredient } from 'src/app/shared/ingredient.model';
 
@@ -20,6 +19,16 @@ export function ShoppingListReducer(
       return {
         ...state,
         ingredients: [...state.ingredients, ...action.payload],
+      };
+    case ShoppingListActions.DELETE_INGREDIENT:
+      const updatedIngredients: Ingredient[] = state.ingredients.filter(
+        (ig, igIndex) => {
+          return igIndex !== action.payload;
+        }
+      );
+      return {
+        ...state,
+        ingredients: updatedIngredients,
       };
     default:
       return state;
