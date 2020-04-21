@@ -30,6 +30,18 @@ export function ShoppingListReducer(
         ...state,
         ingredients: updatedIngredients,
       };
+    case ShoppingListActions.UPDATE_INGREDIENT:
+      const ingredient = state.ingredients[action.payload.index];
+      const updIngredient = {
+        ...ingredient,
+        ...action.payload.ingredient,
+      };
+      const updIngredients = [...state.ingredients];
+      updIngredients[action.payload.index] = updIngredient;
+      return {
+        ...state,
+        ingredients: updIngredients,
+      };
     default:
       return state;
   }

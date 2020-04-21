@@ -4,11 +4,11 @@ import { Subject } from 'rxjs';
 
 @Injectable()
 export class ShoppingListService {
-  // private ingredients: Ingredient[] = [
-  //   new Ingredient('Apples', 5),
-  //   new Ingredient('Tomatoes', 5)
-  // ];
-  private ingredients: Ingredient[] = [];
+  private ingredients: Ingredient[] = [
+    new Ingredient('Apples', 4),
+    new Ingredient('Tomatoes', 5),
+  ];
+  // private ingredients: Ingredient[] = [];
 
   ingredientChanged = new Subject<Ingredient[]>();
   startedEditing = new Subject<number>();
