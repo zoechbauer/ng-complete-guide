@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Store } from '@ngrx/store';
 import { environment } from 'src/environments/environment';
 import { catchError, tap } from 'rxjs/operators';
 import { throwError, BehaviorSubject } from 'rxjs';
 import { User } from './user.model';
 import { Router } from '@angular/router';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from '../auth/store/auth.actions';
 
 export interface AuthResponseData {
   idToken: string;
@@ -15,13 +18,17 @@ export interface AuthResponseData {
   registered?: boolean;
 }
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   user = new BehaviorSubject<User>(null);
   private tokenExpirationTimer: any;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private store: Store<fromApp.AppState>
+  ) {}
 
   signup(email: string, password: string) {
     const firebaseApiKey = environment.firebaseApiKey;
@@ -30,10 +37,10 @@ export class AuthService {
       .post<AuthResponseData>(url, {
         email: email,
         password: password,
-        returnSecureToken: true
+        returnSecureToken: true,
       })
       .pipe(
-        tap(res => {
+        tap((res) => {
           this.handleAuthentication(
             res.email,
             res.localId,
@@ -53,7 +60,15 @@ export class AuthService {
   ) {
     const expirationDate = new Date(new Date().getTime() + +expiresIn * 1000);
     const user = new User(email, userId, token, expirationDate);
-    this.user.next(user);
+    // this.user.next(user);
+    this.store.dispatch(
+      new AuthActions.Login({
+        email: email,
+        userId: userId,
+        token: token,
+        expirationDate: expirationDate,
+      })
+    );
     this.autologout(expiresIn * 1000);
     localStorage.setItem('userData', JSON.stringify(user));
   }
@@ -65,11 +80,11 @@ export class AuthService {
       .post<AuthResponseData>(url, {
         email: email,
         password: password,
-        returnSecureToken: true
+        returnSecureToken: true,
       })
       .pipe(
         catchError(this.handleError),
-        tap(res => {
+        tap((res) => {
           this.handleAuthentication(
             res.email,
             res.localId,
@@ -103,7 +118,8 @@ export class AuthService {
   }
 
   logout() {
-    this.user.next(null);
+    // this.user.next(null);
+    this.store.dispatch(new AuthActions.Logout());
     this.router.navigate(['/auth']);
     localStorage.removeItem('userData');
     if (this.tokenExpirationTimer) {
@@ -136,7 +152,15 @@ export class AuthService {
       new Date(userData._tokenExpirationDate)
     );
     if (loadedUser.token) {
-      this.user.next(loadedUser);
+      // this.user.next(loadedUser);
+      this.store.dispatch(
+        new AuthActions.Login({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          expirationDate: new Date(userData._tokenExpirationDate),
+        })
+      );
 
       const expirationDateInMs = new Date(
         userData._tokenExpirationDate
