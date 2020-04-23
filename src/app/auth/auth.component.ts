@@ -59,13 +59,12 @@ export class AuthComponent implements OnInit, OnDestroy {
     const email = form.value.email;
     const password = form.value.password;
 
-    let authObs: Observable<AuthResponseData>;
+    // let authObs: Observable<AuthResponseData>;
 
     this.error = null;
     this.isLoading = true;
     if (this.isLoginMode) {
       // authObs = this.authService.login(email, password);
-      // TODO resolve problems for spinner and navigation because of comment out authObs observable
       this.store.dispatch(
         new AuthActions.LoginStart({
           email: email,
@@ -73,7 +72,10 @@ export class AuthComponent implements OnInit, OnDestroy {
         })
       );
     } else {
-      authObs = this.authService.signup(email, password);
+      // authObs = this.authService.signup(email, password);
+      this.store.dispatch(
+        new AuthActions.SignupStart({ email: email, password: password })
+      );
     }
 
     // authObs.subscribe(
