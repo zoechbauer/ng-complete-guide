@@ -27,7 +27,7 @@ export class AuthEffects {
     switchMap((authData: AuthActions.LoginStart) => {
       return this.http
         .post<AuthResponseData>(this.url, {
-          email: authData.payload.username,
+          email: authData.payload.email,
           password: authData.payload.password,
           returnSecureToken: true,
         })

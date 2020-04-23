@@ -7,7 +7,7 @@ export const LOGOUT = '[Auth] Logout';
 export class LoginStart implements Action {
   readonly type = LOGIN_START;
 
-  constructor(public payload: { username: string; password: string }) {}
+  constructor(public payload: { email: string; password: string }) {}
 }
 export class Login implements Action {
   readonly type = LOGIN;
