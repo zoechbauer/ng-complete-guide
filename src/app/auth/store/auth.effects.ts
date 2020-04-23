@@ -18,7 +18,6 @@ interface AuthResponseData {
 @Injectable()
 export class AuthEffects {
   private firebaseApiKey = environment.firebaseApiKey;
-  private url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.firebaseApiKey}`;
 
   constructor(
     private actions$: Actions,
@@ -27,11 +26,25 @@ export class AuthEffects {
   ) {}
 
   @Effect()
-  AuthLogin = this.actions$.pipe(
+  authSignup = this.actions$.pipe(
+    ofType(AuthActions.SIGNUP_START),
+    switchMap((authState: AuthActions.SignupStart) => {
+      const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.firebaseApiKey}`;
+      return this.http.post<AuthResponseData>(url, {
+        email: authState.payload.email,
+        password: authState.payload.password,
+        returnSecureToken: true,
+      });
+    })
+  );
+
+  @Effect()
+  authLogin = this.actions$.pipe(
     ofType(AuthActions.LOGIN_START),
     switchMap((authData: AuthActions.LoginStart) => {
+      const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.firebaseApiKey}`;
       return this.http
-        .post<AuthResponseData>(this.url, {
+        .post<AuthResponseData>(url, {
           email: authData.payload.email,
           password: authData.payload.password,
           returnSecureToken: true,
