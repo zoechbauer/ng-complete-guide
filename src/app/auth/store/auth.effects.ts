@@ -15,6 +15,45 @@ interface AuthResponseData {
   localId: string;
   registered?: boolean;
 }
+
+const handleAuthentication = (
+  email: string,
+  userId: string,
+  token: string,
+  expiresIn: number
+) => {
+  const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+  return new AuthActions.AuthenticateSuccess({
+    email: email,
+    userId: userId,
+    token: token,
+    expirationDate: expirationDate,
+  });
+};
+
+const handleError = (errorRes) => {
+  // process errror
+  console.log('AuthEffects ERROR', errorRes);
+  let errorMessage = 'An unknown error occurred!';
+  if (!errorRes.error || !errorRes.error.error) {
+    return of(new AuthActions.AuthenticateFail(errorMessage));
+  }
+  switch (errorRes.error.error.message) {
+    // error messages for login
+    case 'EMAIL_NOT_FOUND':
+      errorMessage = 'The email does not exist!';
+      break;
+    case 'INVALID_PASSWORD':
+      errorMessage = 'The password is not correct!';
+      break;
+    // error messages for signup
+    case 'EMAIL_EXISTS':
+      errorMessage = 'This email exists already!';
+      break;
+  }
+  return of(new AuthActions.AuthenticateFail(errorMessage));
+};
+
 @Injectable()
 export class AuthEffects {
   private firebaseApiKey = environment.firebaseApiKey;
@@ -30,11 +69,25 @@ export class AuthEffects {
     ofType(AuthActions.SIGNUP_START),
     switchMap((authState: AuthActions.SignupStart) => {
       const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.firebaseApiKey}`;
-      return this.http.post<AuthResponseData>(url, {
-        email: authState.payload.email,
-        password: authState.payload.password,
-        returnSecureToken: true,
-      });
+      return this.http
+        .post<AuthResponseData>(url, {
+          email: authState.payload.email,
+          password: authState.payload.password,
+          returnSecureToken: true,
+        })
+        .pipe(
+          map((resData) => {
+            return handleAuthentication(
+              resData.email,
+              resData.localId,
+              resData.idToken,
+              +resData.expiresIn
+            );
+          }),
+          catchError((errorRes) => {
+            return handleError(errorRes);
+          })
+        );
     })
   );
 
@@ -51,37 +104,15 @@ export class AuthEffects {
         })
         .pipe(
           map((resData) => {
-            const expirationDate = new Date(
-              new Date().getTime() + +resData.expiresIn * 1000
+            return handleAuthentication(
+              resData.email,
+              resData.localId,
+              resData.idToken,
+              +resData.expiresIn
             );
-            return new AuthActions.AuthenticateSuccess({
-              email: resData.email,
-              userId: resData.localId,
-              token: resData.idToken,
-              expirationDate: expirationDate,
-            });
           }),
           catchError((errorRes) => {
-            // process errror
-            console.log('AuthEffects ERROR', errorRes);
-            let errorMessage = 'An unknown error occurred!';
-            if (!errorRes.error || !errorRes.error.error) {
-              return of(new AuthActions.AuthenticateFail(errorMessage));
-            }
-            switch (errorRes.error.error.message) {
-              // error messages for login
-              case 'EMAIL_NOT_FOUND':
-                errorMessage = 'The email does not exist!';
-                break;
-              case 'INVALID_PASSWORD':
-                errorMessage = 'The password is not correct!';
-                break;
-              // error messages for signup
-              case 'EMAIL_EXISTS':
-                errorMessage = 'This email exists already!';
-                break;
-            }
-            return of(new AuthActions.AuthenticateFail(errorMessage));
+            return handleError(errorRes);
           })
         );
     })
