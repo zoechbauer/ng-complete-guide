@@ -48,10 +48,27 @@ export class AuthEffects {
               expirationDate: expirationDate,
             });
           }),
-          catchError((err) => {
+          catchError((errorRes) => {
             // process errror
-            console.log(err);
-            return of();
+            console.log('AuthEffects ERROR', errorRes);
+            let errorMessage = 'An unknown error occurred!';
+            if (!errorRes.error || !errorRes.error.error) {
+              return of(new AuthActions.LoginFail(errorMessage));
+            }
+            switch (errorRes.error.error.message) {
+              // error messages for login
+              case 'EMAIL_NOT_FOUND':
+                errorMessage = 'The email does not exist!';
+                break;
+              case 'INVALID_PASSWORD':
+                errorMessage = 'The password is not correct!';
+                break;
+              // error messages for signup
+              case 'EMAIL_EXISTS':
+                errorMessage = 'This email exists already!';
+                break;
+            }
+            return of(new AuthActions.LoginFail(errorMessage));
           })
         );
     })
