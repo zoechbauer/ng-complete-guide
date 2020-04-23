@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder.directive';
 import * as AuthActions from './store/auth.actions';
+import * as fromApp from '../store/app.reducer';
 
 @Component({
   selector: 'app-auth',
@@ -33,10 +34,14 @@ export class AuthComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private router: Router,
     private componentFactoryResolver: ComponentFactoryResolver,
-    private store: Store
+    private store: Store<fromApp.AppState>
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.store.select('auth').subscribe((authState) => {
+      this.error = authState.authError;
+    });
+  }
 
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
@@ -67,18 +72,18 @@ export class AuthComponent implements OnInit, OnDestroy {
       authObs = this.authService.signup(email, password);
     }
 
-    authObs.subscribe(
-      (resp) => {
-        this.isLoading = false;
-        this.router.navigate(['/recipes']);
-      },
-      (errorMessage: string) => {
-        console.log(errorMessage);
-        this.error = errorMessage;
-        this.showErrorAlert(errorMessage);
-        this.isLoading = false;
-      }
-    );
+    // authObs.subscribe(
+    //   (resp) => {
+    //     this.isLoading = false;
+    //     this.router.navigate(['/recipes']);
+    //   },
+    //   (errorMessage: string) => {
+    //     console.log(errorMessage);
+    //     this.error = errorMessage;
+    //     this.showErrorAlert(errorMessage);
+    //     this.isLoading = false;
+    //   }
+    // );
 
     form.reset();
   }
