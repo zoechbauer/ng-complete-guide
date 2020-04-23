@@ -52,19 +52,15 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(form: NgForm) {
-    // console.log(form.value);
     if (!form.value) {
       return;
     }
     const email = form.value.email;
     const password = form.value.password;
 
-    // let authObs: Observable<AuthResponseData>;
-
     this.error = null;
     this.isLoading = true;
     if (this.isLoginMode) {
-      // authObs = this.authService.login(email, password);
       this.store.dispatch(
         new AuthActions.LoginStart({
           email: email,
@@ -72,34 +68,15 @@ export class AuthComponent implements OnInit, OnDestroy {
         })
       );
     } else {
-      // authObs = this.authService.signup(email, password);
       this.store.dispatch(
         new AuthActions.SignupStart({ email: email, password: password })
       );
     }
 
-    // authObs.subscribe(
-    //   (resp) => {
-    //     this.isLoading = false;
-    //     this.router.navigate(['/recipes']);
-    //   },
-    //   (errorMessage: string) => {
-    //     console.log(errorMessage);
-    //     this.error = errorMessage;
-    //     this.showErrorAlert(errorMessage);
-    //     this.isLoading = false;
-    //   }
-    // );
-
     form.reset();
   }
 
-  // onErrorHandling() {
-  //   this.error = null;
-  // }
-
   showErrorAlert(message: string) {
-    // const errComp = new AlertComponent();
     const alertCompFactory = this.componentFactoryResolver.resolveComponentFactory(
       AlertComponent
     );
