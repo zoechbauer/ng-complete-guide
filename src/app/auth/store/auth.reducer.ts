@@ -19,6 +19,7 @@ export function AuthReducer(
 ) {
   switch (action.type) {
     case AuthActions.LOGIN_START:
+    case AuthActions.SIGNUP_START:
       return {
         ...state,
         authError: null,
@@ -44,16 +45,15 @@ export function AuthReducer(
         authError: null,
         loading: false,
       };
-    case AuthActions.SIGNUP_START:
-      return {
-        ...state,
-        authError: null,
-        loading: true,
-      };
     case AuthActions.LOGOUT:
       return {
         ...state,
         user: null,
+      };
+    case AuthActions.CLEAR_ERROR:
+      return {
+        ...state,
+        authError: null,
       };
     default:
       return state;
