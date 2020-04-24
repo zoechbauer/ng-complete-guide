@@ -136,4 +136,47 @@ export class AuthEffects {
       localStorage.removeItem('userData');
     })
   );
+
+  @Effect()
+  autoLogin = this.actions$.pipe(
+    ofType(AuthActions.AUTO_LOGIN),
+    map(() => {
+      const userData: {
+        email: string;
+        id: string;
+        _token: string;
+        _tokenExpirationDate: string;
+      } = JSON.parse(localStorage.getItem('userData'));
+
+      if (!userData) {
+        return { type: 'DUMMY' };
+      }
+      const loadedUser = new User(
+        userData.email,
+        userData.id,
+        userData._token,
+        new Date(userData._tokenExpirationDate)
+      );
+      if (loadedUser.token) {
+        return new AuthActions.AuthenticateSuccess({
+          email: loadedUser.email,
+          userId: loadedUser.id,
+          token: loadedUser.token,
+          expirationDate: new Date(userData._tokenExpirationDate),
+        });
+
+        // const expirationDateInMs = new Date(
+        //   userData._tokenExpirationDate
+        // ).getTime();
+        // const expirationDuration = expirationDateInMs - new Date().getTime();
+        // console.log(
+        //   userData._tokenExpirationDate,
+        //   expirationDateInMs,
+        //   expirationDuration
+        // );
+        // this.autologout(expirationDuration);
+      }
+      return { type: 'DUMMY' };
+    })
+  );
 }
