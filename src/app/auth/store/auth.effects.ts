@@ -6,6 +6,7 @@ import { switchMap, catchError, map, tap } from 'rxjs/operators';
 import { Actions, ofType, Effect } from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
 import { environment } from 'src/environments/environment';
+import { User } from '../user.model';
 
 interface AuthResponseData {
   idToken: string;
@@ -23,6 +24,8 @@ const handleAuthentication = (
   expiresIn: number
 ) => {
   const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+  const user = new User(email, userId, token, expirationDate);
+  localStorage.setItem('userData', JSON.stringify(user));
   return new AuthActions.AuthenticateSuccess({
     email: email,
     userId: userId,
@@ -123,6 +126,14 @@ export class AuthEffects {
     ofType(AuthActions.AUTHENTICATE_SUCCESS, AuthActions.LOGOUT),
     tap(() => {
       this.router.navigate(['/']);
+    })
+  );
+
+  @Effect({ dispatch: false })
+  authLogout = this.actions$.pipe(
+    ofType(AuthActions.LOGOUT),
+    tap(() => {
+      localStorage.removeItem('userData');
     })
   );
 }
