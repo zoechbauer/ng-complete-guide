@@ -18,7 +18,6 @@ export class RecipeEffects {
       return this.http.get<Recipe[]>(url);
     }),
     map((recipes) => {
-      console.log('map(recipes)', recipes);
       return recipes.map((recipe) => {
         return {
           ...recipe,
